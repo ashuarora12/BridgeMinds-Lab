@@ -23,4 +23,7 @@ Lab WhatsApp number instead, so no enquiry is lost.
 
 Submitted at · Target year · Preferred course · Preferred country · Name · Contact · Page
 
-The header row is added automatically if the sheet is empty.
+Rows go to a tab called **Website pop-up**, which the script creates on the
+first submission, along with its header row. The script only ever adds rows
+to that tab: it never edits or deletes anything, and it doesn't touch Google
+Form responses or any other tab.

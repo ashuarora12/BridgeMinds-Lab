@@ -3,7 +3,9 @@
 // BridgeMinds-Lab-Complete-Updated-Code/js/main.js as LEADS_ENDPOINT.
 
 const SHEET_ID = '1BeXVTeRQlpjoJIvdHVWGKemN9B7OxnrrOX5v-CA7s4Q';
-const SHEET_GID = 239317024;
+// Pop-up enquiries go to their own tab, created automatically if missing, so they never
+// mix with Google Form responses or anything else in the spreadsheet.
+const TAB_NAME = 'Website pop-up';
 const HEADERS = ['Submitted at', 'Target year', 'Preferred course', 'Preferred country', 'Name', 'Contact', 'Page'];
 
 function doPost(e) {
@@ -14,7 +16,7 @@ function doPost(e) {
   lock.waitLock(10000);
   try {
     const ss = SpreadsheetApp.openById(SHEET_ID);
-    const sheet = ss.getSheets().find(s => s.getSheetId() === SHEET_GID) || ss.getSheets()[0];
+    const sheet = ss.getSheetByName(TAB_NAME) || ss.insertSheet(TAB_NAME);
     if (sheet.getLastRow() === 0) sheet.appendRow(HEADERS);
     sheet.appendRow([
       new Date(),
