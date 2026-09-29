@@ -8,11 +8,22 @@ if (toggle && nav) {
   });
 }
 
-// Free consultation pop-up, shown once per browser session
+// Google Apps Script web-app URL that writes pop-up enquiries to the Google Sheet.
+// See google-sheets-lead-capture/README.md in the repository for setup.
+const LEADS_ENDPOINT = '';
+const WHATSAPP_NUMBER = '918858869624';
+
+// Free consultation pop-up: shown every time the homepage loads
 (function () {
+  if (document.body.dataset.page !== 'home') return;
   if (typeof HTMLDialogElement !== 'function') return;
-  var KEY = 'bml-consult-popup-seen';
-  try { if (sessionStorage.getItem(KEY) === '1') return; } catch (e) {}
+
+  function options(name, values) {
+    return values.map(function (v) {
+      return '<button type="button" class="lead-option" data-field="' + name + '" data-value="' + v + '">' + v + '</button>';
+    }).join('');
+  }
+
   var modal = document.createElement('dialog');
   modal.className = 'consult-modal';
   modal.setAttribute('aria-labelledby', 'consult-title');
@@ -21,19 +32,114 @@ if (toggle && nav) {
     '<button type="button" class="consult-close" data-close aria-label="Close">×</button>' +
     '<p class="eyebrow">BridgeMinds Lab</p>' +
     '<h2 id="consult-title">Book your free consultation today</h2>' +
-    '<p>Talk to us about your study-abroad, academic or career plans. Your first consultation is completely free, with no commitment.</p>' +
-    '<div class="consult-actions">' +
-    '<a class="button" href="https://forms.gle/4APE1v6JgBJ3oneW6" target="_blank" rel="noopener" data-close>Book my free consultation</a>' +
-    '<a class="button consult-whatsapp" href="https://wa.me/918858869624" target="_blank" rel="noopener" data-close>Message us on WhatsApp</a>' +
-    '</div>' +
-    '<button type="button" class="consult-later" data-close>Maybe later</button>' +
+    '<p class="consult-sub">Share a few details and we will get in touch.</p>' +
+    '<form class="lead-form" novalidate>' +
+    '<div class="lead-progress" aria-hidden="true"><span></span><span></span><span></span><span></span></div>' +
+    '<fieldset class="lead-step" data-step="1"><legend>Which year are you targeting?</legend>' +
+    '<div class="lead-options">' + options('year', ['2027', '2028', '2029']) + '</div></fieldset>' +
+    '<fieldset class="lead-step" data-step="2" hidden><legend>Preferred course</legend>' +
+    '<div class="lead-options">' + options('course', ['Bachelors', 'Masters', 'Doctoral']) + '</div></fieldset>' +
+    '<fieldset class="lead-step" data-step="3" hidden><legend>Any preferred country?</legend>' +
+    '<div class="lead-options lead-options-wrap">' + options('country', ['USA', 'UK', 'Canada', 'Australia', 'Germany', 'Ireland', 'Not sure yet']) + '</div>' +
+    '<div class="lead-other"><input type="text" name="countryOther" maxlength="60" placeholder="Or type another country" aria-label="Another country"><button type="button" class="lead-next">Next</button></div></fieldset>' +
+    '<fieldset class="lead-step" data-step="4" hidden><legend>Your details</legend>' +
+    '<label>Name<input type="text" name="name" maxlength="80" autocomplete="name" required></label>' +
+    '<label>Phone / WhatsApp or email<input type="text" name="contact" maxlength="100" autocomplete="tel" required></label>' +
+    '<input type="text" name="website" class="lead-hp" tabindex="-1" autocomplete="off" aria-hidden="true">' +
+    '<p class="lead-error" role="alert" hidden></p>' +
+    '<button type="submit" class="button lead-submit">Submit</button></fieldset>' +
+    '<div class="lead-nav"><button type="button" class="lead-back" hidden>← Back</button><span class="lead-summary"></span></div>' +
+    '</form>' +
+    '<div class="lead-done" hidden><h3>Thank you!</h3><p>We have received your details and will contact you soon about your free consultation.</p><button type="button" class="button" data-close>Close</button></div>' +
+    '<p class="consult-alt">Prefer to chat? <a href="https://wa.me/' + WHATSAPP_NUMBER + '" target="_blank" rel="noopener">Message us on WhatsApp</a></p>' +
     '</div>';
   document.body.appendChild(modal);
-  function markSeen() { try { sessionStorage.setItem(KEY, '1'); } catch (e) {} }
-  modal.addEventListener('click', function (e) {
-    if (e.target === modal || e.target.closest('[data-close]')) { modal.close(); markSeen(); }
+
+  var form = modal.querySelector('.lead-form');
+  var steps = form.querySelectorAll('.lead-step');
+  var bars = form.querySelectorAll('.lead-progress span');
+  var back = form.querySelector('.lead-back');
+  var summary = form.querySelector('.lead-summary');
+  var error = form.querySelector('.lead-error');
+  var answers = { year: '', course: '', country: '' };
+  var current = 1;
+
+  function show(step) {
+    current = step;
+    steps.forEach(function (s) { s.hidden = Number(s.dataset.step) !== step; });
+    bars.forEach(function (b, i) { b.classList.toggle('on', i < step); });
+    back.hidden = step === 1;
+    summary.textContent = [answers.year, answers.course, answers.country].filter(Boolean).slice(0, step - 1).join(' · ');
+    var focusable = steps[step - 1].querySelector('input:not(.lead-hp), .lead-option');
+    if (focusable) focusable.focus();
+  }
+
+  form.addEventListener('click', function (e) {
+    var opt = e.target.closest('.lead-option');
+    if (opt) {
+      answers[opt.dataset.field] = opt.dataset.value;
+      opt.parentNode.querySelectorAll('.lead-option').forEach(function (b) { b.classList.toggle('selected', b === opt); });
+      if (opt.dataset.field === 'country') form.countryOther.value = '';
+      show(current + 1);
+    }
+    if (e.target.closest('.lead-next')) {
+      var other = form.countryOther.value.trim();
+      if (!other && !answers.country) { form.countryOther.focus(); return; }
+      if (other) answers.country = other;
+      show(4);
+    }
+    if (e.target.closest('.lead-back')) show(current - 1);
   });
-  modal.addEventListener('cancel', markSeen);
+
+  form.addEventListener('input', function () { error.hidden = true; });
+
+  form.countryOther.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); form.querySelector('.lead-next').click(); }
+  });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = form.name.value.trim();
+    var contact = form.contact.value.trim();
+    var digits = contact.replace(/\D/g, '');
+    var validContact = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact) || digits.length >= 8;
+    if (!name) { error.textContent = 'Please enter your name.'; error.hidden = false; form.name.focus(); return; }
+    if (!validContact) { error.textContent = 'Please enter a valid phone number or email.'; error.hidden = false; form.contact.focus(); return; }
+    error.hidden = true;
+
+    var data = { year: answers.year, course: answers.course, country: answers.country, name: name, contact: contact, website: form.website.value, page: location.href };
+    var submit = form.querySelector('.lead-submit');
+
+    function done() {
+      form.hidden = true;
+      modal.querySelector('.consult-sub').hidden = true;
+      modal.querySelector('.lead-done').hidden = false;
+    }
+
+    if (!LEADS_ENDPOINT) {
+      // Not connected to the Google Sheet yet: send the details on WhatsApp instead
+      var text = 'Hi BridgeMinds Lab, I would like a free consultation.\nTarget year: ' + data.year + '\nCourse: ' + data.course + '\nCountry: ' + data.country + '\nName: ' + data.name + '\nContact: ' + data.contact;
+      window.open('https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
+      done();
+      return;
+    }
+
+    submit.disabled = true;
+    submit.textContent = 'Submitting…';
+    fetch(LEADS_ENDPOINT, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(data) })
+      .then(done)
+      .catch(function () {
+        submit.disabled = false;
+        submit.textContent = 'Submit';
+        error.textContent = 'Something went wrong. Please try again or message us on WhatsApp.';
+        error.hidden = false;
+      });
+  });
+
+  modal.addEventListener('click', function (e) {
+    if (e.target === modal || e.target.closest('[data-close]')) modal.close();
+  });
+  show(1);
   setTimeout(function () { modal.showModal(); }, 800);
 })();
 
@@ -41,7 +147,7 @@ if (toggle && nav) {
 (function () {
   var a = document.createElement('a');
   a.className = 'wa-float';
-  a.href = 'https://wa.me/918858869624?text=' + encodeURIComponent('Hi BridgeMinds Lab, I would like to know more about your services.');
+  a.href = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent('Hi BridgeMinds Lab, I would like to know more about your services.');
   a.target = '_blank';
   a.rel = 'noopener';
   a.setAttribute('aria-label', 'Chat with us on WhatsApp');

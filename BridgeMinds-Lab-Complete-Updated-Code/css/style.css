@@ -220,7 +220,7 @@
 .home-redesign .home-brand img{width:150px}
 .home-redesign .nav-links a{font-size:15px}
 .home-redesign .nav-links .nav-cta{padding:10px 20px}
-.home-hero{min-height:0;height:clamp(400px,calc(100vh - 72px - 82px),600px)}
+.home-hero{min-height:0;height:clamp(400px,calc(100vh - 73px - 84px),600px)}
 .home-hero-copy{padding:22px 4vw 22px max(5vw,calc((100vw - 1400px)/2));justify-content:center}
 .home-hero-copy .eyebrow{margin:0 0 14px;font-size:11px}
 .home-hero h1{font-size:clamp(36px,3.7vw,58px);line-height:1.04;margin:0 0 16px}
@@ -257,3 +257,50 @@
  .wa-float{right:16px;bottom:16px;width:54px;height:54px}
 }
 @media print{.wa-float{display:none}}
+
+/* Unified navigation */
+.home-redesign .site-header{border-bottom:1px solid #e7e8e5}
+.home-redesign .nav-links a:not(.nav-cta){position:relative}
+.home-redesign .nav-links a.active:not(.nav-cta){color:#123c56}
+.home-redesign .nav-links a.active:not(.nav-cta):after{content:'';position:absolute;left:0;right:0;bottom:-6px;border-bottom:2px solid var(--accent)}
+.home-redesign .nav-links a:not(.nav-cta):hover{color:#123c56}
+
+/* Smaller hero photo */
+.home-hero{grid-template-columns:minmax(0,1.45fr) minmax(0,.75fr)}
+.home-hero-visual{margin-top:28px;margin-bottom:28px}
+.home-photo-caption{position:absolute;left:12px;right:12px;bottom:12px;width:auto;font-size:12px;padding:10px 12px}
+@media(max-width:760px){.home-hero{grid-template-columns:1fr}.home-hero-visual{margin:0 6vw 12px}.home-hero-visual>img{height:170px}.home-photo-caption{position:static}}
+
+/* Consultation pop-up form */
+.consult-sub{font-size:14px;line-height:1.6;color:var(--muted);margin:0 0 18px}
+.lead-form{text-align:left}
+.lead-progress{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:20px}
+.lead-progress span{height:4px;border-radius:4px;background:#e2e6e2}
+.lead-progress span.on{background:#123c56}
+.lead-step{border:0;margin:0;padding:0;min-width:0}
+.lead-step legend{font:500 19px 'Playfair Display',serif;color:#122b3b;margin-bottom:14px;padding:0}
+.lead-options{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.lead-options-wrap{grid-template-columns:repeat(2,1fr)}
+.lead-option{font:600 15px 'DM Sans',Arial,sans-serif;padding:14px 10px;border:1px solid #c9d2cf;border-radius:6px;background:#fff;color:#122b3b;cursor:pointer;transition:border-color .15s,background .15s}
+.lead-option:hover,.lead-option:focus-visible{border-color:#123c56;outline:none;background:#f3f6f4}
+.lead-option.selected{border-color:#123c56;background:#123c56;color:#fff}
+.lead-other{display:flex;gap:8px;margin-top:12px}
+.lead-other input{flex:1;min-width:0}
+.lead-form input[type=text]{font:15px 'DM Sans',Arial,sans-serif;padding:12px;border:1px solid #c9d2cf;border-radius:6px;background:#fff;color:#122b3b;width:100%}
+.lead-form input[type=text]:focus{outline:2px solid #123c56;outline-offset:0;border-color:#123c56}
+.lead-next{font:600 14px 'DM Sans',Arial,sans-serif;padding:0 18px;border:0;border-radius:6px;background:#123c56;color:#fff;cursor:pointer}
+.lead-step label{display:block;font-size:13px;font-weight:600;color:#122b3b;margin-bottom:12px}
+.lead-step label input{margin-top:6px}
+.lead-hp{position:absolute!important;left:-9999px;width:1px;height:1px;opacity:0}
+.lead-error{color:#b3261e;font-size:13px;margin:0 0 10px}
+.lead-submit{width:100%;border:0;border-radius:6px;background:#123c56;font-size:15px;cursor:pointer;margin-top:4px}
+.lead-submit:disabled{opacity:.7;cursor:default}
+.lead-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:34px;margin-top:12px}
+.lead-back{background:none;border:0;padding:6px 0;font-size:13px;color:var(--muted);cursor:pointer}
+.lead-summary{font-size:12px;color:var(--muted);margin-left:auto}
+.lead-done h3{font:500 24px 'Playfair Display',serif;margin:6px 0 8px}
+.lead-done p{font-size:14px;line-height:1.7;color:var(--muted);margin:0 0 18px}
+.lead-done .button{border:0;border-radius:6px;background:#123c56;cursor:pointer}
+.consult-alt{font-size:12px;color:var(--muted);margin:18px 0 0}
+.consult-alt a{color:#123c56;text-decoration:underline}
+@media(max-width:420px){.lead-options{grid-template-columns:1fr 1fr 1fr}.lead-option{padding:12px 6px;font-size:14px}}
