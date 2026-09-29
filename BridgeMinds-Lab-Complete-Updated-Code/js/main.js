@@ -8,8 +8,8 @@ if (toggle && nav) {
   });
 }
 
-// Google Apps Script web-app URL that writes pop-up enquiries to the Google Sheet.
-// See google-sheets-lead-capture/README.md in the repository for setup.
+// Optional URL that stores pop-up enquiries (e.g. a Google Apps Script web app).
+// While empty, the pop-up sends the enquiry to WhatsApp instead.
 const LEADS_ENDPOINT = '';
 const WHATSAPP_NUMBER = '918858869624';
 
@@ -50,7 +50,7 @@ const WHATSAPP_NUMBER = '918858869624';
     '<button type="submit" class="button lead-submit">Submit</button></fieldset>' +
     '<div class="lead-nav"><button type="button" class="lead-back" hidden>← Back</button><span class="lead-summary"></span></div>' +
     '</form>' +
-    '<div class="lead-done" hidden><h3>Thank you!</h3><p>We have received your details and will contact you soon about your free consultation.</p><button type="button" class="button" data-close>Close</button></div>' +
+    '<div class="lead-done" hidden><h3>Thank you!</h3><p>We have received your details and will contact you soon about your free consultation.</p><a class="button lead-whatsapp" target="_blank" rel="noopener" hidden>Open WhatsApp to send</a><button type="button" class="button lead-close" data-close>Close</button></div>' +
     '<p class="consult-alt">Prefer to chat? <a href="https://wa.me/' + WHATSAPP_NUMBER + '" target="_blank" rel="noopener">Message us on WhatsApp</a></p>' +
     '</div>';
   document.body.appendChild(modal);
@@ -110,24 +110,33 @@ const WHATSAPP_NUMBER = '918858869624';
     var data = { year: answers.year, course: answers.course, country: answers.country, name: name, contact: contact, website: form.website.value, page: location.href };
     var submit = form.querySelector('.lead-submit');
 
-    function done() {
+    function done(whatsappUrl) {
       form.hidden = true;
       modal.querySelector('.consult-sub').hidden = true;
+      modal.querySelector('.consult-alt').hidden = true;
+      if (whatsappUrl) {
+        modal.querySelector('.lead-done h3').textContent = 'Almost done!';
+        modal.querySelector('.lead-done p').textContent = 'Send us your details on WhatsApp and we will contact you about your free consultation.';
+        var send = modal.querySelector('.lead-whatsapp');
+        send.href = whatsappUrl;
+        send.hidden = false;
+      }
       modal.querySelector('.lead-done').hidden = false;
     }
 
     if (!LEADS_ENDPOINT) {
-      // Not connected to the Google Sheet yet: send the details on WhatsApp instead
+      // No storage endpoint configured: send the details on WhatsApp instead
       var text = 'Hi BridgeMinds Lab, I would like a free consultation.\nTarget year: ' + data.year + '\nCourse: ' + data.course + '\nCountry: ' + data.country + '\nName: ' + data.name + '\nContact: ' + data.contact;
-      window.open('https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
-      done();
+      var url = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(text);
+      window.open(url, '_blank', 'noopener');
+      done(url);
       return;
     }
 
     submit.disabled = true;
     submit.textContent = 'Submitting…';
     fetch(LEADS_ENDPOINT, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(data) })
-      .then(done)
+      .then(function () { done(''); })
       .catch(function () {
         submit.disabled = false;
         submit.textContent = 'Submit';

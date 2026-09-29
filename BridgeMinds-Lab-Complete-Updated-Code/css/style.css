@@ -304,3 +304,7 @@
 .consult-alt{font-size:12px;color:var(--muted);margin:18px 0 0}
 .consult-alt a{color:#123c56;text-decoration:underline}
 @media(max-width:420px){.lead-options{grid-template-columns:1fr 1fr 1fr}.lead-option{padding:12px 6px;font-size:14px}}
+.lead-done{display:grid;gap:10px}
+.lead-done[hidden]{display:none}
+.lead-done .lead-whatsapp{background:#25d366;color:#fff;border-radius:6px;text-align:center}
+.lead-done .lead-close{background:none;color:#123c56;border:1px solid #123c56}
