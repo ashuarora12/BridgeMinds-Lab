@@ -8,9 +8,9 @@ if (toggle && nav) {
   });
 }
 
-// Google Apps Script web-app URL that writes pop-up enquiries to the Google Sheet.
-// See google-sheets-lead-capture/README.md in the repository for setup.
-const LEADS_ENDPOINT = '';
+// Pop-up enquiries are emailed to this address by FormSubmit (formsubmit.co).
+// The first enquiry triggers a one-time "Activate form" email to this inbox.
+const LEADS_ENDPOINT = 'https://formsubmit.co/ajax/bridgemindslab@gmail.com';
 const WHATSAPP_NUMBER = '918858869624';
 
 // Free consultation pop-up: shown every time the homepage loads
@@ -50,7 +50,7 @@ const WHATSAPP_NUMBER = '918858869624';
     '<button type="submit" class="button lead-submit">Submit</button></fieldset>' +
     '<div class="lead-nav"><button type="button" class="lead-back" hidden>← Back</button><span class="lead-summary"></span></div>' +
     '</form>' +
-    '<div class="lead-done" hidden><h3>Thank you!</h3><p>We have received your details and will contact you soon about your free consultation.</p><button type="button" class="button" data-close>Close</button></div>' +
+    '<div class="lead-done" hidden><h3>Thank you!</h3><p>We have received your details and will contact you soon about your free consultation.</p><a class="button lead-whatsapp" target="_blank" rel="noopener" hidden>Open WhatsApp to send</a><button type="button" class="button lead-close" data-close>Close</button></div>' +
     '<p class="consult-alt">Prefer to chat? <a href="https://wa.me/' + WHATSAPP_NUMBER + '" target="_blank" rel="noopener">Message us on WhatsApp</a></p>' +
     '</div>';
   document.body.appendChild(modal);
@@ -107,33 +107,47 @@ const WHATSAPP_NUMBER = '918858869624';
     if (!validContact) { error.textContent = 'Please enter a valid phone number or email.'; error.hidden = false; form.contact.focus(); return; }
     error.hidden = true;
 
-    var data = { year: answers.year, course: answers.course, country: answers.country, name: name, contact: contact, website: form.website.value, page: location.href };
     var submit = form.querySelector('.lead-submit');
+    var text = 'Hi BridgeMinds Lab, I would like a free consultation.\nTarget year: ' + answers.year + '\nCourse: ' + answers.course + '\nCountry: ' + answers.country + '\nName: ' + name + '\nContact: ' + contact;
+    var whatsappUrl = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(text);
 
-    function done() {
+    function done(viaWhatsApp) {
       form.hidden = true;
       modal.querySelector('.consult-sub').hidden = true;
+      modal.querySelector('.consult-alt').hidden = true;
+      if (viaWhatsApp) {
+        modal.querySelector('.lead-done h3').textContent = 'Almost done!';
+        modal.querySelector('.lead-done p').textContent = 'Send us your details on WhatsApp and we will contact you about your free consultation.';
+        var send = modal.querySelector('.lead-whatsapp');
+        send.href = whatsappUrl;
+        send.hidden = false;
+      }
       modal.querySelector('.lead-done').hidden = false;
     }
 
-    if (!LEADS_ENDPOINT) {
-      // Not connected to the Google Sheet yet: send the details on WhatsApp instead
-      var text = 'Hi BridgeMinds Lab, I would like a free consultation.\nTarget year: ' + data.year + '\nCourse: ' + data.course + '\nCountry: ' + data.country + '\nName: ' + data.name + '\nContact: ' + data.contact;
-      window.open('https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
-      done();
-      return;
-    }
+    if (form.website.value) { done(false); return; } // spam trap filled in: drop silently
 
     submit.disabled = true;
     submit.textContent = 'Submitting…';
-    fetch(LEADS_ENDPOINT, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(data) })
-      .then(done)
-      .catch(function () {
-        submit.disabled = false;
-        submit.textContent = 'Submit';
-        error.textContent = 'Something went wrong. Please try again or message us on WhatsApp.';
-        error.hidden = false;
-      });
+    fetch(LEADS_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        'Target year': answers.year,
+        'Preferred course': answers.course,
+        'Preferred country': answers.country,
+        'Name': name,
+        'Contact': contact,
+        '_subject': 'New free consultation enquiry: ' + name,
+        '_template': 'table',
+        '_captcha': 'false'
+      })
+    })
+      .then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (body) { return res.ok && String(body.success) === 'true'; });
+      })
+      .then(function (ok) { done(!ok); })
+      .catch(function () { done(true); }); // email service unreachable: offer WhatsApp instead
   });
 
   modal.addEventListener('click', function (e) {
