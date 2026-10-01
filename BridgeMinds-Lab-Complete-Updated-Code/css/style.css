@@ -308,3 +308,4 @@
 .lead-done[hidden]{display:none}
 .lead-done .lead-whatsapp{background:#25d366;color:#fff;border-radius:6px;text-align:center}
 .lead-done .lead-close{background:none;color:#123c56;border:1px solid #123c56}
+.lead-done .lead-whatsapp[hidden]{display:none}

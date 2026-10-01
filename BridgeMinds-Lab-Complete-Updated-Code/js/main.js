@@ -8,9 +8,9 @@ if (toggle && nav) {
   });
 }
 
-// Optional URL that stores pop-up enquiries (e.g. a Google Apps Script web app).
-// While empty, the pop-up sends the enquiry to WhatsApp instead.
-const LEADS_ENDPOINT = '';
+// Pop-up enquiries are emailed to this address by FormSubmit (formsubmit.co).
+// The first enquiry triggers a one-time "Activate form" email to this inbox.
+const LEADS_ENDPOINT = 'https://formsubmit.co/ajax/bridgemindslab@gmail.com';
 const WHATSAPP_NUMBER = '918858869624';
 
 // Free consultation pop-up: shown every time the homepage loads
@@ -107,14 +107,15 @@ const WHATSAPP_NUMBER = '918858869624';
     if (!validContact) { error.textContent = 'Please enter a valid phone number or email.'; error.hidden = false; form.contact.focus(); return; }
     error.hidden = true;
 
-    var data = { year: answers.year, course: answers.course, country: answers.country, name: name, contact: contact, website: form.website.value, page: location.href };
     var submit = form.querySelector('.lead-submit');
+    var text = 'Hi BridgeMinds Lab, I would like a free consultation.\nTarget year: ' + answers.year + '\nCourse: ' + answers.course + '\nCountry: ' + answers.country + '\nName: ' + name + '\nContact: ' + contact;
+    var whatsappUrl = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(text);
 
-    function done(whatsappUrl) {
+    function done(viaWhatsApp) {
       form.hidden = true;
       modal.querySelector('.consult-sub').hidden = true;
       modal.querySelector('.consult-alt').hidden = true;
-      if (whatsappUrl) {
+      if (viaWhatsApp) {
         modal.querySelector('.lead-done h3').textContent = 'Almost done!';
         modal.querySelector('.lead-done p').textContent = 'Send us your details on WhatsApp and we will contact you about your free consultation.';
         var send = modal.querySelector('.lead-whatsapp');
@@ -124,25 +125,29 @@ const WHATSAPP_NUMBER = '918858869624';
       modal.querySelector('.lead-done').hidden = false;
     }
 
-    if (!LEADS_ENDPOINT) {
-      // No storage endpoint configured: send the details on WhatsApp instead
-      var text = 'Hi BridgeMinds Lab, I would like a free consultation.\nTarget year: ' + data.year + '\nCourse: ' + data.course + '\nCountry: ' + data.country + '\nName: ' + data.name + '\nContact: ' + data.contact;
-      var url = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(text);
-      window.open(url, '_blank', 'noopener');
-      done(url);
-      return;
-    }
+    if (form.website.value) { done(false); return; } // spam trap filled in: drop silently
 
     submit.disabled = true;
     submit.textContent = 'Submitting…';
-    fetch(LEADS_ENDPOINT, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(data) })
-      .then(function () { done(''); })
-      .catch(function () {
-        submit.disabled = false;
-        submit.textContent = 'Submit';
-        error.textContent = 'Something went wrong. Please try again or message us on WhatsApp.';
-        error.hidden = false;
-      });
+    fetch(LEADS_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        'Target year': answers.year,
+        'Preferred course': answers.course,
+        'Preferred country': answers.country,
+        'Name': name,
+        'Contact': contact,
+        '_subject': 'New free consultation enquiry: ' + name,
+        '_template': 'table',
+        '_captcha': 'false'
+      })
+    })
+      .then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (body) { return res.ok && String(body.success) === 'true'; });
+      })
+      .then(function (ok) { done(!ok); })
+      .catch(function () { done(true); }); // email service unreachable: offer WhatsApp instead
   });
 
   modal.addEventListener('click', function (e) {
