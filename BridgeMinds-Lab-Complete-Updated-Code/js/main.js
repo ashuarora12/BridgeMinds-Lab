@@ -8,9 +8,10 @@ if (toggle && nav) {
   });
 }
 
-// Pop-up enquiries are emailed to this address by FormSubmit (formsubmit.co).
-// The first enquiry triggers a one-time "Activate form" email to this inbox.
-const LEADS_ENDPOINT = 'https://formsubmit.co/ajax/bridgemindslab@gmail.com';
+// Pop-up enquiries are emailed to bridgemindslab@gmail.com by Web3Forms (web3forms.com).
+// The access key is public by design: it can only send submissions to that inbox.
+const LEADS_ENDPOINT = 'https://api.web3forms.com/submit';
+const WEB3FORMS_ACCESS_KEY = '73b9df4e-6050-4874-9409-75400ea1d2ad';
 const WHATSAPP_NUMBER = '918858869624';
 
 // Free consultation pop-up: shown every time the homepage loads
@@ -133,14 +134,14 @@ const WHATSAPP_NUMBER = '918858869624';
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({
+        access_key: WEB3FORMS_ACCESS_KEY,
+        subject: 'New free consultation enquiry: ' + name,
+        from_name: 'BridgeMinds Lab website',
         'Target year': answers.year,
         'Preferred course': answers.course,
         'Preferred country': answers.country,
         'Name': name,
-        'Contact': contact,
-        '_subject': 'New free consultation enquiry: ' + name,
-        '_template': 'table',
-        '_captcha': 'false'
+        'Contact': contact
       })
     })
       .then(function (res) {
