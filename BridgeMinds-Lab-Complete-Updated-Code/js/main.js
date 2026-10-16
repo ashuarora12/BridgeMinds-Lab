@@ -193,3 +193,24 @@ const WHATSAPP_NUMBER = '918858869624';
   });
   select(tabs[0]);
 })();
+
+// Floating success-story card on the homepage, shown once the consultation pop-up is closed
+(function () {
+  if (document.body.dataset.page !== 'home') return;
+  try { if (sessionStorage.getItem('storyCardClosed')) return; } catch (e) {}
+  var card = document.createElement('aside');
+  card.className = 'story-float';
+  card.setAttribute('aria-label', 'Student success story');
+  card.innerHTML =
+    '<button type="button" class="story-float-close" aria-label="Close">×</button>' +
+    '<a href="/stories"><img src="images/story-hemchand-thumb.jpg" alt="" width="64" height="64">' +
+    '<span><small>Success story</small><b>Hemchand · MPhil Physics</b><em>University of Cambridge</em><i>Read his story →</i></span></a>';
+  card.querySelector('.story-float-close').addEventListener('click', function () {
+    card.classList.remove('show');
+    try { sessionStorage.setItem('storyCardClosed', '1'); } catch (e) {}
+  });
+  document.body.appendChild(card);
+  function show() { setTimeout(function () { card.classList.add('show'); }, 1200); }
+  var modal = document.querySelector('.consult-modal');
+  if (modal) modal.addEventListener('close', show); else show();
+})();
