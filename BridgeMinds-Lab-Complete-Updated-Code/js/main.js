@@ -204,7 +204,8 @@ const WHATSAPP_NUMBER = '918858869624';
   card.innerHTML =
     '<button type="button" class="story-float-close" aria-label="Close">×</button>' +
     '<a href="/stories"><img src="images/story-hemchand-thumb.jpg" alt="" width="64" height="64">' +
-    '<span><small>Success story</small><b>Hemchand · MPhil Physics</b><em>University of Cambridge</em><i>Read his story →</i></span></a>';
+    '<span><small>Success story</small><b>Hemchand · MPhil Physics</b><em>University of Cambridge</em><i>Read his story →</i></span></a>' +
+    '<a class="story-float-li" href="https://www.linkedin.com/in/hemchandkj/" target="_blank" rel="noopener" aria-label="Hemchand on LinkedIn">in</a>';
   card.querySelector('.story-float-close').addEventListener('click', function () {
     card.classList.remove('show');
     try { sessionStorage.setItem('storyCardClosed', '1'); } catch (e) {}
