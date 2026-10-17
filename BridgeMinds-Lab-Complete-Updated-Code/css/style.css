@@ -443,3 +443,7 @@
 .story-float.show:hover{animation-play-state:paused}
 @media (prefers-reduced-motion:reduce){.story-float.show{animation:none}}
 .story-float-li{position:absolute;right:10px;bottom:10px;width:22px;height:22px;border-radius:4px;background:#0a66c2;color:#fff!important;font:700 13px/22px Arial,sans-serif;text-align:center;padding:0!important;text-decoration:none}
+.story-services{margin:0 0 26px}
+.story-services p{margin:0 0 10px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:#5a6b2a}
+.story-services ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.story-services li{background:#eef1e3;color:var(--ink);border-radius:999px;padding:7px 14px;font-size:13px;font-weight:500}
