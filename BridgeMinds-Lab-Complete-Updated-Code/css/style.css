@@ -447,3 +447,28 @@
 .story-services p{margin:0 0 10px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:#5a6b2a}
 .story-services ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
 .story-services li{background:#eef1e3;color:var(--ink);border-radius:999px;padding:7px 14px;font-size:13px;font-weight:500}
+
+/* Success story feature (matches Instagram post) */
+.ss{position:relative;max-width:900px;margin:0 auto;background:#f8f4ec;border-radius:16px;overflow:hidden;box-shadow:0 18px 44px rgba(18,60,86,.10)}
+.ss-photo{display:block;width:100%;height:640px;object-fit:cover;object-position:center 72%}
+.ss-box{position:relative;z-index:2;margin:-90px 48px 0;background:#f8f4ec url(../images/story-chapel.jpg) right bottom/auto 100% no-repeat;border-radius:18px;border-left:8px solid #3f5a1e;box-shadow:0 14px 34px rgba(18,36,59,.16);padding:30px 40px 26px;display:grid;grid-template-columns:auto auto 1fr;align-items:center;column-gap:30px}
+.ss-box:after{content:"";position:absolute;inset:0;border-radius:18px;pointer-events:none;background:linear-gradient(90deg,#f8f4ec 55%,rgba(248,244,236,.55) 78%,rgba(248,244,236,0))}
+.ss-box>*{position:relative;z-index:1}
+.ss-eyebrow{display:flex;align-items:center;gap:14px;margin:0 0 8px;font:700 22px 'DM Sans',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#3f5a1e}
+.ss-eyebrow:after{content:"";width:130px;height:1.5px;background:#5a7080}
+.ss-main h2{margin:0;font:600 clamp(40px,5.4vw,64px)/1.02 'Playfair Display',Georgia,serif;color:#0f2340;letter-spacing:-.01em}
+.ss-crest{grid-column:2;width:128px;height:auto;padding-left:30px;border-left:1.5px solid #c9c3b6}
+.ss-meta{grid-column:1/-1;margin:18px 0 0;font:400 18px 'DM Sans',sans-serif;color:#0f2340}
+.ss-meta strong{font-weight:600}
+.ss-meta span{margin:0 10px}
+.ss-body{position:relative;z-index:1;padding:34px 150px 44px 48px}
+.ss-quote{margin:0 0 24px;padding-left:76px;position:relative}
+.ss-quote:before{content:"“";position:absolute;left:0;top:-14px;font:700 96px/1 'Playfair Display',Georgia,serif;color:#a9b98a}
+.ss-quote p{margin:0;font:500 clamp(20px,2.4vw,27px)/1.42 'Playfair Display',Georgia,serif;color:#0f2340}
+.ss-quote em{color:#3f5a1e}
+.ss-body .story-services{padding-left:76px}
+.ss-name{margin:0;display:flex;align-items:center;gap:16px;font:600 20px 'DM Sans',sans-serif;color:#0f2340}
+.ss-name span{width:56px;height:2px;background:#3f5a1e}
+.ss-name a{font-weight:500;font-size:13px;color:#123c56;text-decoration:underline;text-underline-offset:3px}
+.ss-swoosh{position:absolute;right:0;bottom:0;width:210px;height:154px;opacity:.85;z-index:0;pointer-events:none}
+@media (max-width:760px){.ss-photo{height:380px}.ss-box{margin:-70px 14px 0;padding:22px 20px 20px;grid-template-columns:1fr auto;column-gap:16px;background-size:0 0}.ss-eyebrow{font-size:13px;white-space:nowrap;gap:10px}.ss-eyebrow:after{width:30px}.ss-main h2{font-size:34px}.ss-crest{width:62px;padding-left:16px}.ss-meta{font-size:14px;margin-top:12px}.ss-meta span{margin:0 6px}.ss-body{padding:26px 20px 34px}.ss-photo{object-position:center 60%}.ss-quote{padding-left:46px}.ss-quote:before{font-size:64px;top:-8px}.ss-body .story-services{padding-left:0}.ss-swoosh{width:180px;height:132px}}
