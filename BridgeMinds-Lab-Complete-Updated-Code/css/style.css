@@ -470,3 +470,8 @@
 .ss-name a{font-weight:500;font-size:13px;color:#123c56;text-decoration:underline;text-underline-offset:3px}
 .ss-swoosh{position:absolute;right:0;bottom:0;width:170px;height:125px;z-index:0;pointer-events:none;opacity:.8}
 @media (max-width:760px){.ss{grid-template-columns:1fr}.ss-photo{min-height:0;height:330px}.ss-text{padding:28px 22px 34px;border-left:0;border-top:7px solid #3f5a1e}.ss-crest{width:54px;padding-left:16px}.ss-quote{padding-left:40px}.ss-quote:before{font-size:56px}.ss-swoosh{width:120px;height:88px}}
+.ss+.ss{margin-top:40px}
+.ss-title h2 em{font-style:italic;font-weight:500;color:#3f5a1e}
+.ss-raj .ss-photo{object-position:46% 50%}
+.ss-next{margin:0 0 22px;font:500 clamp(18px,1.8vw,22px)/1.45 'Newsreader',Georgia,serif;color:#0f2340}
+.ss-next em{color:#3f5a1e}
