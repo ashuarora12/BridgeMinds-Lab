@@ -194,24 +194,57 @@ const WHATSAPP_NUMBER = '918858869624';
   select(tabs[0]);
 })();
 
-// Floating success-story card on the homepage, shown once the consultation pop-up is closed
+// Floating success-story card on the homepage, shown once the consultation pop-up is closed.
+// Rotates through the stories below.
 (function () {
   if (document.body.dataset.page !== 'home') return;
   try { if (sessionStorage.getItem('storyCardClosed')) return; } catch (e) {}
+  var stories = [
+    { id: 'hem-chand', img: 'images/story-hemchand-thumb.jpg', name: 'Hem Chand · MPhil Physics', line: 'University of Cambridge', li: 'https://www.linkedin.com/in/hemchandkj/', liName: 'Hem Chand' },
+    { id: 'rajat-pandey', img: 'images/story-rajat-thumb.jpg', name: 'Rajat Pandey · PhD', line: 'Interview calls from 4 IITs', li: 'https://www.linkedin.com/in/rajat-pandey-4b99041a4/', liName: 'Rajat Pandey' }
+  ];
   var card = document.createElement('aside');
   card.className = 'story-float';
-  card.setAttribute('aria-label', 'Student success story');
+  card.setAttribute('aria-label', 'Student success stories');
   card.innerHTML =
     '<button type="button" class="story-float-close" aria-label="Close">×</button>' +
-    '<a href="/stories"><img src="images/story-hemchand-thumb.jpg" alt="" width="64" height="64">' +
-    '<span><small>Success story</small><b>Hem Chand · MPhil Physics</b><em>University of Cambridge</em><i>Read his story →</i></span></a>' +
-    '<a class="story-float-li" href="https://www.linkedin.com/in/hemchandkj/" target="_blank" rel="noopener" aria-label="Hem Chand on LinkedIn">in</a>';
+    '<div class="story-float-body"><a class="story-float-link"><img alt="" width="64" height="64">' +
+    '<span><small>Success story</small><b></b><em></em><i>Read the story →</i></span></a>' +
+    '<a class="story-float-li" target="_blank" rel="noopener">in</a></div>';
+  var body = card.querySelector('.story-float-body');
+  var current = 0, timer = null;
+  function render(i) {
+    var s = stories[i];
+    card.querySelector('.story-float-link').href = '/stories#' + s.id;
+    card.querySelector('img').src = s.img;
+    card.querySelector('b').textContent = s.name;
+    card.querySelector('em').textContent = s.line;
+    var li = card.querySelector('.story-float-li');
+    li.href = s.li;
+    li.setAttribute('aria-label', s.liName + ' on LinkedIn');
+  }
+  function next() {
+    body.classList.add('swap');
+    setTimeout(function () {
+      current = (current + 1) % stories.length;
+      render(current);
+      body.classList.remove('swap');
+    }, 350);
+  }
+  function start() { if (!timer && stories.length > 1) timer = setInterval(next, 7000); }
+  function stop() { clearInterval(timer); timer = null; }
+  render(0);
+  card.addEventListener('mouseenter', stop);
+  card.addEventListener('mouseleave', start);
+  card.addEventListener('focusin', stop);
+  card.addEventListener('focusout', start);
   card.querySelector('.story-float-close').addEventListener('click', function () {
+    stop();
     card.classList.remove('show');
     try { sessionStorage.setItem('storyCardClosed', '1'); } catch (e) {}
   });
   document.body.appendChild(card);
-  function show() { setTimeout(function () { card.classList.add('show'); }, 1200); }
+  function show() { setTimeout(function () { card.classList.add('show'); start(); }, 1200); }
   var modal = document.querySelector('.consult-modal');
   if (modal) modal.addEventListener('close', show); else show();
 })();
