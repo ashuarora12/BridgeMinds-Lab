@@ -478,3 +478,22 @@
 .story-float-body{transition:opacity .35s}
 .story-float-body.swap{opacity:0}
 .ss{scroll-margin-top:100px}
+
+/* Brand logo: arch + graduation cap, white and light blue on dark blue */
+.site-header{background:#0f2a3c!important;border:0!important}
+.brand.bm{display:flex;align-items:center;gap:8px;line-height:1;text-decoration:none;padding:7px 2px;border-top:1px solid #93c5fd;border-bottom:1px solid #93c5fd}
+.bm-mark{height:44px;width:auto;flex:none}
+.bm-wm{display:inline-flex;flex-direction:column;align-items:stretch}
+.bm-wm b{display:block;font:500 22px/1 'Newsreader',Georgia,serif;color:#fff;letter-spacing:-.005em}
+.bm-wm span{display:flex;align-items:center;gap:6px;margin-top:5px;font:600 9px/1 'DM Sans',sans-serif;letter-spacing:.42em;padding-left:.42em;color:#93c5fd}
+.bm-wm span:before,.bm-wm span:after{content:"";flex:1;height:1px;background:currentColor;opacity:.8}
+.site-header .nav-links a:not(.nav-cta){color:#e3ecf5}
+.site-header .nav-links a:not(.nav-cta):hover,.site-header .nav-links a.active:not(.nav-cta){color:#fff}
+.site-header .nav-links a.active:not(.nav-cta):after{border-color:#93c5fd}
+.site-header .nav-links .nav-cta{background:#93c5fd!important;color:#0f2a3c!important;border:0!important}
+.site-header .menu-toggle{color:#fff}
+@media (max-width:900px){.site-header .nav-links{background:#0f2a3c;border-color:#1f3d52}}
+.footer-brand .brand.bm{gap:10px;padding:9px 2px;width:max-content}
+.footer-brand .brand.bm .bm-mark{height:52px}
+.footer-brand .brand.bm .bm-wm b{font-size:26px}
+.footer-brand .brand.bm .bm-wm span{font-size:10px}
