@@ -248,3 +248,11 @@ const WHATSAPP_NUMBER = '918858869624';
   var modal = document.querySelector('.consult-modal');
   if (modal) modal.addEventListener('close', show); else show();
 })();
+
+// Hide time-limited announcements (workshop banner and section) after their date
+(function () {
+  var today = new Date().toISOString().slice(0, 10);
+  document.querySelectorAll('[data-until]').forEach(function (el) {
+    if (today >= el.getAttribute('data-until')) el.remove();
+  });
+})();
