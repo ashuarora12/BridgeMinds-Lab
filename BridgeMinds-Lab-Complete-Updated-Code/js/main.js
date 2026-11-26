@@ -14,8 +14,11 @@ const LEADS_ENDPOINT = 'https://api.web3forms.com/submit';
 const WEB3FORMS_ACCESS_KEY = '73b9df4e-6050-4874-9409-75400ea1d2ad';
 const WHATSAPP_NUMBER = '918858869624';
 
-// Free consultation pop-up: shown every time the homepage loads
+// Free consultation pop-up: shown every time the homepage loads.
+// Paused for now; set to true to switch it back on.
+var CONSULT_POPUP_ENABLED = false;
 (function () {
+  if (!CONSULT_POPUP_ENABLED) return;
   if (document.body.dataset.page !== 'home') return;
   if (typeof HTMLDialogElement !== 'function') return;
 
