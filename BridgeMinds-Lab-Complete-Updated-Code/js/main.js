@@ -15,8 +15,8 @@ const WEB3FORMS_ACCESS_KEY = '73b9df4e-6050-4874-9409-75400ea1d2ad';
 const WHATSAPP_NUMBER = '918858869624';
 
 // Free consultation pop-up: shown every time the homepage loads.
-// Paused for now; set to true to switch it back on.
-var CONSULT_POPUP_ENABLED = false;
+// Set to false to pause it.
+var CONSULT_POPUP_ENABLED = true;
 (function () {
   if (!CONSULT_POPUP_ENABLED) return;
   if (document.body.dataset.page !== 'home') return;
